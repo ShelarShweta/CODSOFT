@@ -3,111 +3,73 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class QuizApplication {
+    private static int score = 0;
+    private static boolean timeUp = false;
+    private static Scanner scanner = new Scanner(System.in);
+    private static Timer timer = new Timer();
+
     public static void main(String[] args) {
-        Scanner sc = new Scanner(System.in);
-        int score = 0;
-
         System.out.println("Welcome to Quiz");
-        Timer timer = new Timer();
-        timer.schedule(new TimerTask() {
-            public void run() {
-                System.out.println(" Time up!");
-                System.exit(0);
 
+        askQuestion("What is the capital of India?",
+                new String[] { "a) Mumbai", "b) New Delhi", "c) Kolkata", "d) Chennai" }, "b", 10);
+        askQuestion("Multiplication of 5*3 is?", new String[] { "a) 15", "b) 8", "c) 3", "d) 10" }, "a", 10);
+        askQuestion("Which is the largest planet in the solar system?",
+                new String[] { "a) Mercury", "b) Venus", "c) Jupiter", "d) Saturn" }, "c", 10);
+        askQuestion("Who is the first president?", new String[] { "a) George Washington", "b) Abraham Lincoln",
+                "c) Thomas Jefferson", "d) George H. W. Bush" }, "a", 10);
+        askQuestion("Who is the father of the Indian constitution?", new String[] { "a) B.R. Ambedkar",
+                "b) Mahatma Gandhi", "c) Jawaharlal Nehru", "d) Subhas Chandra Bose" }, "a", 10);
+        askQuestion("Who discovered zero(0)?",
+                new String[] { "a) Isaac Newton", "b) Albert Einstein", "c) Aryabhata", "d) Galileo Galilei" }, "c",
+                10);
+        askQuestion("What is the square root of 64?", new String[] { "a) 8", "b) 6", "c) 10", "d) 4" }, "a", 10);
+
+        displayScore();
+
+        scanner.close();
+    }
+
+    public static void askQuestion(String question, String[] options, String correctAnswer, int timeInSeconds) {
+        if (!timeUp) {
+            System.out.println(question);
+            for (String option : options) {
+                System.out.println(option);
             }
 
-        }, 30000);
+            System.out.print("Your answer: ");
+            char userAnswer = scanner.next().charAt(0);
+            checkAnswer(userAnswer, correctAnswer);
 
-        System.out.println(" Que 1 : what is the captical of India?");
-        System.out.println("a) Mumbai");
-        System.out.println("b) Delhi");
-        System.out.println("c) Pune");
-        System.out.println("d) Kolkata");
-        char ans1 = sc.next().charAt(0);
+            // Start the timer after user inputs their answer
+            timer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    System.out.println("Time up!");
+                    timeUp = true;
+                    displayScore();
+                }
+            }, timeInSeconds * 1000);
 
-        System.out.println(" Que 2 : multiplication of 5*3 is  ?");
-        System.out.println("a) 4");
-        System.out.println("b) 2");
-        System.out.println("c) 15");
-        System.out.println("d) 8");
-        char ans2 = sc.next().charAt(0);
-
-        System.out.println(" Que 3 : which is the largest planet in solar system?");
-        System.out.println("a) Earth");
-        System.out.println("b) Mars");
-        System.out.println("c) Jupiter");
-        System.out.println("d) Saturn");
-        char ans3 = sc.next().charAt(0);
-
-        System.out.println(" Que 4 : who is the first president?");
-        System.out.println("a) Mahatama Gandhi");
-        System.out.println("b)  Dr.B.R.Ambedkar");
-        System.out.println("c) Pandit Jawaharlal Nehru");
-        System.out.println("d) Dr.Rajendra Prasad");
-        char ans4 = sc.next().charAt(0);
-
-        System.out.println(" Que 5 : who is the father of indian constitution?");
-        System.out.println("a) Dr.B.R.Ambedkar");
-        System.out.println("b) Jotiba Phule");
-        System.out.println("c) Pandit Jawaharlal Nehru");
-        System.out.println("d) Mahatama Gandhi");
-        char ans5 = sc.next().charAt(0);
-
-        System.out.println(" Que  6 : who discoverd zero(0)?");
-        System.out.println("a) Albert Einstein");
-        System.out.println("b) Archimedes");
-        System.out.println("c) Aryabhatta");
-        System.out.println("d) John Wallis");
-        char ans6 = sc.next().charAt(0);
-
-        timer.cancel();
-        switch (ans1) {
-            case 'b':
-                score++;
-                break;
-            default:
-                break;
+            // Cancel the timer if user inputs the answer before time ends
+            if (!timeUp) {
+                timer.schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        timer.cancel();
+                    }
+                }, timeInSeconds * 1000);
+            }
         }
-        switch (ans2) {
-            case 'c':
-                score++;
-                break;
-            default:
-                break;
-        }
-        switch (ans3) {
-            case 'b':
-                score++;
-                break;
-            default:
-                break;
-        }
-        switch (ans4) {
-            case 'd':
-                score++;
-                break;
-            default:
-                break;
-        }
-        switch (ans5) {
-            case 'a':
-                score++;
-                break;
-            default:
-                break;
-        }
-        switch (ans6) {
-            case 'c':
-                score++;
-                break;
-            default:
-                break;
-        }
-        displayScore(score);
     }
 
-    public static void displayScore(int score) {
-        System.out.println(" your score : " + score);
+    public static void checkAnswer(char userAnswer, String correctAnswer) {
+        if (userAnswer == correctAnswer.charAt(0)) {
+            score++;
+        }
     }
 
+    public static void displayScore() {
+        System.out.println("Your score: " + score);
+    }
 }
